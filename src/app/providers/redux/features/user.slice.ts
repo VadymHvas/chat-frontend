@@ -3,7 +3,8 @@ import { UserState } from "../interfaces/user.state.interface";
 
 const initialState: UserState = {
   id: "",
-  name: ""
+  name: "",
+  onlineUsers: []
 };
 
 const userSlice = createSlice({
@@ -16,9 +17,13 @@ const userSlice = createSlice({
 
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
+    },
+
+    setOnlineUsers: (state, action: PayloadAction<string[]>) => {
+      state.onlineUsers = action.payload;
     }
   }
 });
 
 export default userSlice.reducer;
-export const { setId, setName } = userSlice.actions;
+export const { setId, setName, setOnlineUsers } = userSlice.actions;

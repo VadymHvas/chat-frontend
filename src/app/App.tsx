@@ -6,6 +6,7 @@ import Auth from "../widgets/auth/Auth";
 import Header from "../widgets/header/Header";
 import { useAppSelector } from "./providers/hooks/redux.hooks";
 import { useSocketContext } from "./providers/context/socket.context";
+import Main from "../widgets/main/Main";
 
 function App() {
   const { id, name } = useAppSelector(state => state.user);
@@ -19,7 +20,7 @@ function App() {
 
         <Header />
 
-        {!id && <Auth />}
+        {!id ? <Auth /> : <Main />}
       </ThemeProvider>
     </Container>
   );

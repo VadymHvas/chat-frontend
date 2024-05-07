@@ -13,7 +13,6 @@ const Header: FC = () => {
         backgroundImage: 'none',
         mt: 2
       }}
-      position={"fixed"}
     >
       <Container maxWidth={"lg"}>
         <Toolbar
@@ -21,8 +20,8 @@ const Header: FC = () => {
           sx={(theme) => ({
             display: "flex",
             justifyContent: "space-between",
-            backdropFilter: 'blur(24px)',
-            borderRadius: "10px",
+            backdropFilter: 'blur(45px)',
+            borderRadius: "50px",
             bgcolor: theme.palette.secondary.main,
             boxShadow: theme.palette.mode === "light"
               ? "0px 4px 8px " + theme.palette.secondary.dark

@@ -9,19 +9,23 @@ const Auth: FC = () => {
 
   const { socket } = useSocketContext();
 
-  const [errorText, setErrorText] = useState<string>("");
+  const [labelText, setLabelText] = useState<string>("Your name here");
   const [name, setName] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
 
   const handleRegister = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (name.length < 3) {
-      return setErrorText("Name must be longer than 3")
+    if (name.length < 3 || name.length > 25) {
+      setError(true);
+      return setLabelText("Name must be longer than 3 and shorter than 25")
     } else if (name.includes(" ")) {
-      return setErrorText("Incorrect name");
+      setError(true);
+      return setLabelText("Incorrect name");
     }
 
-    setErrorText("");
+    setError(false);
+    setLabelText("Your name here");
 
     socket.emit("addUser", { name });
   };
@@ -29,7 +33,8 @@ const Auth: FC = () => {
   useEffect(() => {
     socket.on("getMe", (data: {id: string; name: string; error?: string}) => {
       if ("error" in data) {
-        return setErrorText("Name already in use");
+        setError(true);
+        return setLabelText("Name already in use");
       }
 
       dispatch(setId(data.id));
@@ -45,12 +50,13 @@ const Auth: FC = () => {
 
       <Box component={"form"} sx={{mt: 1}} onSubmit={handleRegister}>
         <TextField
-          label={"Your name here"}
+          label={labelText}
           fullWidth
-          variant={"outlined"}
           value={name}
+          variant={"outlined"}
           onChange={(e) => setName(e.target.value)}
-          {...(errorText ? { error: true, helperText: errorText } : {})}
+          {...(error ? { error: true } : {})}
+          autoComplete={"off"}
         />
 
         <Button type={"submit"} fullWidth variant={"contained"} sx={{mt: 2}}>Register</Button>
