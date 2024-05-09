@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <Provider store={store}>
-    <SocketContext.Provider value={{socket: io("http://localhost:8000")}}>
+    <SocketContext.Provider value={{socket: io("https://chat-backend-8cjw.onrender.com/")}}>
       <ThemeContextProvider>
         <App />
       </ThemeContextProvider>
