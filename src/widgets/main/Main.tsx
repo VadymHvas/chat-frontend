@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useEffect, useState } from 'react';
+import React, { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -33,6 +33,8 @@ const Main: FC = () => {
 
   const [message, setMessage] = useState<string>("");
 
+  const messagesRef = useRef<any>(null);
+
   const handleJoin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -63,6 +65,10 @@ const Main: FC = () => {
   const inviteUser = (name: string) => {
     socket.emit("inviteUser", { name, inviterName: username });
   };
+
+  useEffect(() => {
+    messagesRef.current.lastElementChild?.scrollIntoView({behavior: "auto"});
+  }, [messages]);
 
   useEffect(() => {
     socket.on("getUsers", (data: {users: string[]}) => {
@@ -190,6 +196,7 @@ const Main: FC = () => {
 
         <Box
           id="messages"
+          ref={messagesRef}
           sx={{
             overflowY: "scroll",
             height: "calc(100vh - 360px)",
