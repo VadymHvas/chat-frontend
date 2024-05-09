@@ -1,9 +1,15 @@
-import React, { FC } from 'react';
-import { AppBar, Box, Container, Toolbar, Typography, useTheme } from "@mui/material";
+import React, { FC, useState } from 'react';
+import { AppBar, Box, Button, Container, Toolbar, Typography, useTheme } from "@mui/material";
 import ToggleTheme from "../../shared/toggleTheme/ToggleTheme";
+import { useAppSelector } from "../../app/providers/hooks/redux.hooks";
+import Invitations from "../../shared/invitations/Invitations";
 
 const Header: FC = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const theme = useTheme();
+
+  const { name } = useAppSelector(state => state.user);
 
   return (
     <AppBar
@@ -33,6 +39,16 @@ const Header: FC = () => {
               Chat
             </Typography>
           </Box>
+
+          {name && (
+            <Box>
+              <Button variant={"text"} onClick={() => setIsOpen(prev => !prev)}>
+                Invitations
+              </Button>
+            </Box>
+          )}
+
+          <Invitations isOpen={isOpen} onClose={() => setIsOpen(false)} />
 
           <Box sx={{mr: 2}}>
             <ToggleTheme />

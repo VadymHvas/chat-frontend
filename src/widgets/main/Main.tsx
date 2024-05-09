@@ -13,20 +13,23 @@ import {
 } from "@mui/material";
 import { useSocketContext } from "../../app/providers/context/socket.context";
 import { useAppDispatch, useAppSelector } from "../../app/providers/hooks/redux.hooks";
-import { setOnlineUsers } from "../../app/providers/redux/features/user.slice";
+import { addInvitation, setOnlineUsers } from "../../app/providers/redux/features/user.slice";
 import { setMessages } from "../../app/providers/redux/features/chat.slice";
 import Message from "../../shared/message/Message";
+import InviteSnackbar from "../../shared/snackbar/Snackbar";
 
 const Main: FC = () => {
   const { socket } = useSocketContext();
+  const { onlineUsers, invitations } = useAppSelector(state => state.user);
+  const { messages } = useAppSelector(state => state.chat);
   const dispatch = useAppDispatch();
   const username = useAppSelector(state => state.user.name);
-  const { onlineUsers } = useAppSelector(state => state.user);
-  const { messages } = useAppSelector(state => state.chat);
 
   const [labelText, setLabelText] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
+  const [isOpenSnackbar, setIsOpenSnackbar] = useState<boolean>(false);
+  const [snackbarText, setSnackbarText] = useState<string>("");
 
   const [message, setMessage] = useState<string>("");
 
@@ -40,6 +43,10 @@ const Main: FC = () => {
 
     setError(false);
     setLabelText("");
+
+    socket.emit("inviteUser", {name, inviterName: username});
+
+    setName("");
   };
 
   const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
@@ -53,15 +60,26 @@ const Main: FC = () => {
     setMessage("");
   };
 
+  const inviteUser = (name: string) => {
+    socket.emit("inviteUser", { name, inviterName: username });
+  };
+
   useEffect(() => {
     socket.on("getUsers", (data: {users: string[]}) => {
       dispatch(setOnlineUsers(data.users.filter((user: string) => user !== username)));
     });
+
+    socket.on("getMessage", (data: {name: string; message: string}) => {
+      dispatch(setMessages(data));
+    });
   }, []);
 
   useEffect(() => {
-    socket.on("getMessage", (data: {name: string; message: string}) => {
-      dispatch(setMessages(data));
+    socket.on("invite", (data: {name: string}) => {
+      dispatch(addInvitation(data.name));
+
+      setSnackbarText(data.name);
+      setIsOpenSnackbar(true);
     });
   }, []);
 
@@ -136,9 +154,9 @@ const Main: FC = () => {
         </Box>
 
         <List sx={{width: "100%"}}>
-          {onlineUsers.map((user: string) => (
-            <ListItem key={user}>
-              <ListItemButton sx={{borderRadius: "8px", bgcolor: "background.paper"}}>
+          {Array.from(onlineUsers).map((user: string) => (
+            <ListItem key={Math.random() * 5053}>
+              <ListItemButton sx={{borderRadius: "8px", bgcolor: "background.paper"}} onClick={() => inviteUser(user)}>
                 <ListItemAvatar>
                   <Avatar>
                     @
@@ -180,7 +198,7 @@ const Main: FC = () => {
           }}
         >
           {messages.map(msg => (
-            <Message message={msg.message} name={msg.name} key={msg.name} />
+            <Message message={msg.message} name={msg.name} key={Math.random() * 63} />
           ))}
         </Box>
 
@@ -206,6 +224,8 @@ const Main: FC = () => {
 
           <Button type={"submit"} variant={"outlined"} {...(message === "" ? { disabled: true } : {})}>Send</Button>
         </Box>
+
+        <InviteSnackbar text={snackbarText} isOpen={isOpenSnackbar} setIsOpen={setIsOpenSnackbar} />
       </Box>
     </Container>
   );

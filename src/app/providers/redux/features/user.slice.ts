@@ -4,7 +4,8 @@ import { UserState } from "../interfaces/user.state.interface";
 const initialState: UserState = {
   id: "",
   name: "",
-  onlineUsers: []
+  onlineUsers: new Set<string>(),
+  invitations: new Set<string>()
 };
 
 const userSlice = createSlice({
@@ -20,10 +21,14 @@ const userSlice = createSlice({
     },
 
     setOnlineUsers: (state, action: PayloadAction<string[]>) => {
-      state.onlineUsers = action.payload;
+      state.onlineUsers = new Set(action.payload);
+    },
+
+    addInvitation: (state, action: PayloadAction<string>) => {
+      state.invitations.add(action.payload);
     }
   }
 });
 
 export default userSlice.reducer;
-export const { setId, setName, setOnlineUsers } = userSlice.actions;
+export const { setId, setName, setOnlineUsers, addInvitation } = userSlice.actions;

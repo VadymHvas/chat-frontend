@@ -7,6 +7,9 @@ import Header from "../widgets/header/Header";
 import { useAppSelector } from "./providers/hooks/redux.hooks";
 import { useSocketContext } from "./providers/context/socket.context";
 import Main from "../widgets/main/Main";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 function App() {
   const { id, name } = useAppSelector(state => state.user);

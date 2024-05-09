@@ -1,5 +1,6 @@
 export interface UserState {
   id: string;
   name: string;
-  onlineUsers: string[];
+  onlineUsers: Set<string>;
+  invitations: Set<string>;
 }
